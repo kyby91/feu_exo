@@ -1,69 +1,67 @@
 #Solve expression
 
-# def resoudre_expression(expression)
-#     # Étape 1 : Supprimez les espaces de l'expression
-#     expression = expression.gsub(" ", "")
-#     operateurs = ['+', '-', '*', '/', '%']
+def resoudre_expression(expression)
+    # Étape 1 : Supprimez les espaces de l'expression
+    expression = expression.gsub(" ", "")
+    operateurs = ['+', '-', '*', '/', '%']
   
-#     # Étape 2 : Trouvez et résolvez les parenthèses les plus internes
-#     while expression.include?('(')
-#       parenthese_ouverte_index = expression.rindex('(')
-#       parenthese_fermee_index = expression.index(')', parenthese_ouverte_index)
-#       sous_expression = expression[(parenthese_ouverte_index + 1)...parenthese_fermee_index]
-#       resultat_sous_expression = resoudre_expression(sous_expression)
+    # Étape 2 : Trouvez et résolvez les parenthèses les plus internes
+    while expression.include?('(')
+      parenthese_ouverte_index = expression.rindex('(')
+      parenthese_fermee_index = expression.index(')', parenthese_ouverte_index)
+      sous_expression = expression[(parenthese_ouverte_index + 1)...parenthese_fermee_index]
+      p sous_expression
+      resultat_sous_expression = resoudre_expression(sous_expression)
   
-#       expression[parenthese_ouverte_index..parenthese_fermee_index] = resultat_sous_expression.to_s
-#     end
+      expression.sub!(sous_expression, resultat_sous_expression.to_s)
+    end
   
-#     # Étape 3 : Résolvez les opérations de multiplication et de division de gauche à droite
-#     while expression.include?('*') || expression.include?('/')
-#       multiplicatif_index = expression.index('*') || expression.index('/')
-#       nombre1_index = multiplicatif_index - 1
-#       nombre2_index = multiplicatif_index + 1
+    # Étape 3 : Résolvez les opérations de multiplication et de division de gauche à droite
+    while expression.include?('*') || expression.include?('/')      
+      pattern = /(\d+[*\/]\d+)/
+      match = expression.match(pattern)
+      short_expression = match[1] if match
+      multiplicatif_index = short_expression.index('*') || short_expression.index('/')
+      nombre1 = short_expression[0...multiplicatif_index].to_i
+      operateur = short_expression.slice(multiplicatif_index)
+      nombre2 = short_expression[(multiplicatif_index + 1)...short_expression.length].to_i
   
-#       nombre1 = expression.slice(nombre1_index).to_i
-#       operateur = expression.slice(multiplicatif_index)
-#       nombre2 = expression.slice(nombre2_index).to_i
-  
-#       resultat = case operateur
-#                  when '*'
-#                    nombre1 * nombre2
-#                  when '/'
-#                    nombre1 / nombre2
-#                  end
-  
-#       sous_expression = expression.slice(nombre1_index..nombre2_index)
-#       expression.sub!(sous_expression, resultat.to_s)
-#     end
-  
-#     # Étape 4 : Résolvez les opérations d'addition et de soustraction de gauche à droite
-#     while expression.include?('+') || expression.include?('-')
-#       additif_index = expression.index('+') || expression.index('-')
-#       nombre1_index = additif_index - 1
-#       nombre2_index = additif_index + 1
-  
-#       nombre1 = expression.slice(nombre1_index).to_i
-#       operateur = expression.slice(additif_index)
-#       nombre2 = expression.slice(nombre2_index).to_i
-  
-#       resultat = case operateur
-#                  when '+'
-#                    nombre1 + nombre2
-#                  when '-'
-#                    nombre1 - nombre2
-#                  end
-  
-#       sous_expression = expression.slice(nombre1_index..nombre2_index)
-#       expression.sub!(sous_expression, resultat.to_s)
-#     end
-  
-#     # Étape 5 : Le résultat final est le seul élément restant dans l'expression
-#     resultat_final = expression.to_i
-#     puts "Le résultat de #{expression} est : #{resultat_final}"
-# end
+      resultat = case operateur
+                 when '*'
+                   nombre1 * nombre2
+                 when '/'
+                   nombre1 / nombre2
+                 end
 
-# # Appel de la fonction avec l'expression à résoudre
-# resoudre_expression("5 + 3 * 2 + (4 * 4 / 2)")  # Exemple avec priorité de multiplication
+      expression.sub!(short_expression, resultat.to_s)
+    end
+  
+    # Étape 4 : Résolvez les opérations d'addition et de soustraction de gauche à droite
+    while expression.include?('+') || expression.include?('-')
+      pattern = /(\d+[+\-]\d+)/
+      match = expression.match(pattern)
+      short_expression = match[1] if match
+      operator_index = short_expression.index('+') || short_expression.index('-')
+      nombre1 = short_expression[0...operator_index].to_i
+      operateur = short_expression.slice(operator_index)
+      nombre2 = short_expression[(operator_index + 1)...short_expression.length].to_i
+  
+      resultat = case operateur
+                 when '+'
+                   nombre1 + nombre2
+                 when '-'
+                   nombre1 - nombre2
+                 end
+      expression.sub!(short_expression, resultat.to_s)
+    end
+  
+    # Étape 5 : Le résultat final est le seul élément restant dans l'expression
+    resultat_final = expression.to_i
+    puts "Le résultat est : #{resultat_final}"
+end
+
+# Appel de la fonction avec l'expression à résoudre
+resoudre_expression("4 + 21 * 38 + (1+1)")  # Exemple avec priorité de multiplication
   
 
 def resoudre_operation(number1, operator, number2)
@@ -92,4 +90,14 @@ def resoudre_operation(number1, operator, number2)
     puts "Le résultat est : #{resultat}"
 end
 
-resoudre_operation(ARGV[0], ARGV[1], ARGV[2])
+# resoudre_operation(ARGV[0], ARGV[1], ARGV[2])
+# resoudre_operation("2","*","10")
+
+def test (expression)
+  pattern = /(\d+\*\d+)/
+  match = expression.match(pattern)
+  result = match[1] if match
+  puts result
+end
+
+# test("2+4*60+5")
